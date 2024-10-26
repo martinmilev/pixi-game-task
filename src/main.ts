@@ -1,4 +1,5 @@
 import { Application } from "pixi.js";
+import { initDevtools } from "@pixi/devtools";
 
 (async () => {
   const app = new Application();
@@ -8,6 +9,8 @@ import { Application } from "pixi.js";
   });
 
   app.canvas.style.position = "absolute";
+
+  initDevtools({ app });
 
   document.body.appendChild(app.canvas);
 })();
