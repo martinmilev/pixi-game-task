@@ -1,12 +1,17 @@
 import { Text, Container } from "pixi.js";
+import { GameState } from "../ts/GameState";
+import { GameStateManager } from "../game/GameStateManager";
 
 export class HomeScreen extends Container {
   constructor(
     onNewGame: () => void,
     onHighScores: () => void,
-    onSettings: () => void
+    onSettings: () => void,
+    gameStateManager: GameStateManager
   ) {
     super();
+
+    gameStateManager.setState(GameState.START);
 
     const createMenuItem = (
       text: string,
@@ -45,10 +50,22 @@ export class HomeScreen extends Container {
       return menuItem;
     };
 
-    const newGameText = createMenuItem("New Game", onNewGame, -80);
+    const newGameText = createMenuItem(
+      "New Game",
+      () => this.startNewGame(onNewGame, gameStateManager),
+      -80
+    );
     const highScoresText = createMenuItem("High Scores", onHighScores, 0);
     const settingsText = createMenuItem("Settings", onSettings, 80);
 
     this.addChild(newGameText, highScoresText, settingsText);
+  }
+
+  private startNewGame(
+    onNewGame: { (): void; (): void },
+    gameStateManager: GameStateManager
+  ) {
+    gameStateManager.setState(GameState.PLAYING);
+    onNewGame();
   }
 }

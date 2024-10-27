@@ -1,62 +1,72 @@
 import { Container, Text } from "pixi.js";
 import { Game } from "../game/Game";
-import { MenuPopup } from "./MenuPopup";
+import { Popup } from "./Popup";
+import { GameStateManager } from "../game/GameStateManager";
+import { GameState } from "../ts/GameState";
+import { GameOverPopup } from "./GameOverPopup";
 
 export class GameScreen extends Container {
   private game: Game;
-  private menuPopup: MenuPopup;
+  private stateManager: GameStateManager;
+  private menuPopup: Popup;
+  private gameOverPopup: GameOverPopup;
+  private onBack: () => void;
 
-  constructor(onBack: () => void) {
+  constructor(onBack: () => void, gameStateManager: GameStateManager) {
     super();
-    this.game = new Game();
-    this.game.addKeyListener();
 
-    this.addChild(this.game.getPlayer());
-    this.addChild(this.game.getEnemy());
-
+    this.stateManager = gameStateManager;
+    this.onBack = onBack;
     this.setupUI();
 
-    this.menuPopup = new MenuPopup(() => this.resumeGame(), onBack);
+    this.game = new Game(this.stateManager);
+    this.game.addKeyListener();
+    this.addChild(this.game.getPlayer());
+    this.menuPopup = new Popup(
+      () => this.resumeGame(),
+      () => this.leaveGame()
+    );
+
     this.addChild(this.menuPopup);
 
-    window.addEventListener("keydown", this.onKeyPress.bind(this));
+    this.gameOverPopup = new GameOverPopup(() => this.leaveGame());
+
+    this.addChild(this.gameOverPopup);
+
+    this.stateManager.onStateChange(this.handleGameStateChange.bind(this));
+  }
+
+  private handleGameStateChange() {
+    const currentState = this.stateManager.getState();
+
+    this.menuPopup.visible = currentState === GameState.PAUSED;
+    this.gameOverPopup.visible = currentState === GameState.GAME_OVER;
   }
 
   private setupUI() {
     const gameText = new Text({
-      text: "Game Screen\nPress Escape",
+      text: "\nPress Escape for pause.",
       style: {
         fontSize: 24,
         fill: "#ffffff",
       },
     });
     gameText.anchor.set(0.5);
-    gameText.position.set(window.innerWidth / 2, window.innerHeight / 2 - 80);
+    gameText.position.set(200, 50);
     this.addChild(gameText);
   }
 
-  private togglePause() {
-    const isPaused = this.game.isGamePaused();
-
-    this.menuPopup.visible = isPaused;
-  }
-
   private resumeGame() {
-    this.game.togglePaused();
-    const isPaused = this.game.isGamePaused();
-
-    this.menuPopup.visible = isPaused;
+    this.stateManager.setState(GameState.PLAYING);
   }
 
-  private onKeyPress(event: KeyboardEvent) {
-    if (event.key === "Escape") {
-      this.togglePause();
-    }
+  private leaveGame() {
+    this.stateManager.setState(GameState.START);
+    this.onBack();
   }
 
   public destroy() {
     super.destroy();
-    window.removeEventListener("keydown", this.onKeyPress.bind(this));
     this.game.removeKeyListener();
     this.game.destroy();
   }

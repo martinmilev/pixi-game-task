@@ -1,12 +1,15 @@
 import { Application } from "pixi.js";
 import { initDevtools } from "@pixi/devtools";
 import { switchScreen } from "./utils/navigation";
+import { GameStateManager } from "./game/GameStateManager";
 import {
   HomeScreen,
   GameScreen,
   HighScoresScreen,
   SettingsScreen,
 } from "./screens";
+
+const gameStateManager = new GameStateManager();
 
 (async () => {
   const app = new Application();
@@ -15,12 +18,19 @@ import {
   initDevtools({ app });
   document.body.appendChild(app.canvas);
 
+  // Instantiate GameStateManager
+
+  // Create screens
   const homeScreen = new HomeScreen(
     () => switchScreen(app, gameScreen),
     () => switchScreen(app, highScoresScreen),
-    () => switchScreen(app, settingsScreen)
+    () => switchScreen(app, settingsScreen),
+    gameStateManager
   );
-  const gameScreen = new GameScreen(() => switchScreen(app, homeScreen));
+  const gameScreen = new GameScreen(
+    () => switchScreen(app, homeScreen),
+    gameStateManager
+  );
   const highScoresScreen = new HighScoresScreen(() =>
     switchScreen(app, homeScreen)
   );

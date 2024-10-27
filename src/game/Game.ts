@@ -1,24 +1,52 @@
 import { Ticker } from "pixi.js";
-import { Enemy, Player } from "./entities";
+import { Player } from "./entities";
+import { GameStateManager } from "./GameStateManager";
+import { GameState } from "../ts/GameState";
 
 export class Game {
+  private stateManager: GameStateManager;
   private player: Player;
-  private enemy: Enemy;
   private keys: { [key: string]: boolean } = {};
   private ticker: Ticker;
   private isPaused: boolean = false;
 
-  constructor() {
+  constructor(gameStateManager: GameStateManager) {
+    this.stateManager = gameStateManager;
     this.player = new Player();
-    this.player.setPosition(window.innerWidth / 2, window.innerHeight / 2)
-    this.enemy = new Enemy();
-    this.enemy.setPosition(
-      Math.random() * window.innerWidth,
-      Math.random() * window.innerHeight
-    );
+    this.player.setPosition(window.innerWidth / 2, window.innerHeight - 100);
 
     this.ticker = Ticker.shared;
+
     this.ticker.add(this.update, this);
+
+    this.stateManager.onStateChange(this.handleGameStateChange.bind(this));
+  }
+
+  private handleGameStateChange() {
+    const currentState = this.stateManager.getState();
+
+    if (currentState === GameState.GAME_OVER) {
+      this.destroy();
+      return;
+    }
+
+    if (currentState === GameState.PLAYING) {
+      this.startGameLoop();
+    } else {
+      this.stopGameLoop();
+    }
+  }
+
+  private startGameLoop() {
+    if (!this.ticker.started) {
+      this.ticker.start();
+    }
+  }
+
+  private stopGameLoop() {
+    if (this.ticker.started) {
+      this.ticker.stop();
+    }
   }
 
   public addKeyListener() {
@@ -32,10 +60,19 @@ export class Game {
   }
 
   private onKeyDown(event: KeyboardEvent) {
+    const currentState = this.stateManager.getState();
+
+    if (currentState !== GameState.PLAYING) return;
+
+    if (event.key === " ") {
+      this.player.shoot();
+    }
+
     if (event.key === "Escape") {
-      this.isPaused = !this.isPaused;
+      this.stateManager.setState(GameState.PAUSED);
       return;
     }
+
     this.keys[event.key] = true;
   }
 
@@ -44,8 +81,6 @@ export class Game {
   }
 
   private update() {
-    if (this.isPaused) return;
-
     let dx = 0,
       dy = 0;
 
@@ -58,11 +93,10 @@ export class Game {
       this.player.move(dx, dy);
     }
 
-    this.enemy.move();
-  }
-
-  public togglePaused(): void {
-    this.isPaused = !this.isPaused;
+    // Handle bullets
+    for (const bullet of this.player.getBullets()) {
+      bullet.move();
+    }
   }
 
   public isGamePaused(): boolean {
@@ -75,9 +109,5 @@ export class Game {
 
   public getPlayer() {
     return this.player;
-  }
-
-  public getEnemy() {
-    return this.enemy;
   }
 }

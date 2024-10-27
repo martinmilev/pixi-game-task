@@ -1,11 +1,10 @@
 import { Container, Text, Graphics } from "pixi.js";
 
-export class MenuPopup extends Container {
-  private resumeButton: Text;
+export class GameOverPopup extends Container {
   private leaveButton: Text;
   private message: Text;
 
-  constructor(onResume: () => void, onLeave: () => void) {
+  constructor(onLeave: () => void) {
     super();
 
     const size = 500;
@@ -20,7 +19,7 @@ export class MenuPopup extends Container {
     this.addChild(background);
 
     this.message = new Text({
-      text: "Paused",
+      text: "Game Over!",
       style: {
         fontSize: 52,
         fill: "red",
@@ -35,34 +34,6 @@ export class MenuPopup extends Container {
     this.message.interactive = true;
 
     this.addChild(this.message);
-
-    this.resumeButton = new Text({
-      text: "Resume",
-      style: {
-        fontSize: 32,
-        fill: "black",
-        fontWeight: "bold",
-      },
-    });
-    this.resumeButton.anchor.set(0.5);
-    this.resumeButton.position.set(
-      window.innerWidth / 2,
-      window.innerHeight / 2 + 50
-    );
-    this.resumeButton.interactive = true;
-    this.resumeButton.cursor = "pointer";
-    this.resumeButton.on("pointerdown", () => {
-      this.resumeButton.style.fill = "black";
-      onResume();
-    });
-    this.addChild(this.resumeButton);
-
-    this.resumeButton.on("pointerover", () => {
-      this.resumeButton.style.fill = "green";
-    });
-    this.resumeButton.on("pointerout", () => {
-      this.resumeButton.style.fill = "black";
-    });
 
     this.leaveButton = new Text({
       text: "Leave",
@@ -80,7 +51,6 @@ export class MenuPopup extends Container {
     this.leaveButton.interactive = true;
     this.leaveButton.cursor = "pointer";
     this.leaveButton.on("pointerdown", () => {
-      this.resumeButton.style.fill = "black";
       onLeave();
     });
 
