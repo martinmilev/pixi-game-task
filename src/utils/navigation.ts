@@ -2,7 +2,7 @@ import { Application, Container } from "pixi.js";
 
 /**
  * Utility function.
- * Clears the stage and adds the new screen to the app.
+ * Clears the stage and adds the new screen.
  *
  * @param app
  * @param screen
