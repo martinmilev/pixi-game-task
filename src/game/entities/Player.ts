@@ -1,6 +1,8 @@
-import { Graphics, Container } from "pixi.js";
+import { Graphics, Container, Sprite, Assets } from "pixi.js";
 import { Entity } from "../../ts/Entity";
 import { Bullet } from "./Bullet";
+
+const ship = await Assets.load('../../public/ship.png');
 
 export class Player extends Container implements Entity {
   public speed: number = 5;
@@ -9,14 +11,20 @@ export class Player extends Container implements Entity {
   constructor() {
     super();
 
-    const graphics = new Graphics()
-      .moveTo(-25, 25)
-      .lineTo(25, 25)
-      .lineTo(0, -25)
-      .closePath()
-      .fill(0x00ff00);
+    const player = new Sprite(ship)
 
-    this.addChild(graphics);
+    // const graphics = new Graphics()
+    //   .moveTo(-25, 25)
+    //   .lineTo(25, 25)
+    //   .lineTo(0, -25)
+    //   .closePath()
+    //   .fill(0x00ff00);
+
+    player.width = 100;
+    player.height = 100;
+    player.x = -50
+
+    this.addChild(player);
   }
 
   move(dx: number, dy: number) {
@@ -38,7 +46,7 @@ export class Player extends Container implements Entity {
   public updateBullets() {
     for (let i = this.bullets.length - 1; i >= 0; i--) {
       const bullet = this.bullets[i];
-      bullet.move()
+      bullet.move();
       if (bullet.y < -10) {
         this.bullets.splice(i, 1);
         bullet.destroy();

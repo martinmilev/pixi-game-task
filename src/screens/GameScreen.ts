@@ -1,9 +1,11 @@
-import { Container, Text } from "pixi.js";
+import { Assets, Container, Text, Ticker, TilingSprite } from "pixi.js";
 import { Game } from "../game/Game";
 import { Popup } from "./Popup";
 import { GameStateManager } from "../game/GameStateManager";
 import { GameState } from "../ts/GameState";
 import { GameOverPopup } from "./GameOverPopup";
+
+const texture = await Assets.load("../../public/bg.png");
 
 export class GameScreen extends Container {
   private game: Game;
@@ -15,13 +17,34 @@ export class GameScreen extends Container {
   constructor(onBack: () => void, gameStateManager: GameStateManager) {
     super();
 
+    console.log(this.addChild)
+
     this.stateManager = gameStateManager;
     this.onBack = onBack;
     this.setupUI();
 
+
+    const tilingSprite = new TilingSprite({
+      texture,
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+    this.addChild(tilingSprite);
+
+    const ticker = Ticker.shared;
+
+    let count = 0;
+
+    ticker.add(() =>
+      {
+          count += 0.005;
+          tilingSprite.tilePosition.y += 2;
+      });
+
     this.game = new Game(this.stateManager);
     this.game.addKeyListener();
     this.addChild(this.game.getPlayer());
+    this.addChild(this.game.getAsteroid());
     this.menuPopup = new Popup(
       () => this.resumeGame(),
       () => this.leaveGame()

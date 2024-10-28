@@ -1,11 +1,12 @@
 import { Ticker } from "pixi.js";
-import { Player } from "./entities";
+import { Enemy, Player } from "./entities";
 import { GameStateManager } from "./GameStateManager";
 import { GameState } from "../ts/GameState";
 
 export class Game {
   private stateManager: GameStateManager;
   private player: Player;
+  private asteroid: Enemy;
   private keys: { [key: string]: boolean } = {};
   private ticker: Ticker;
   private isPaused: boolean = false;
@@ -15,10 +16,11 @@ export class Game {
     this.player = new Player();
     this.player.setPosition(window.innerWidth / 2, window.innerHeight - 100);
 
+    this.asteroid = new Enemy();
+    this.asteroid.setPosition(window.innerWidth - 500, 500 - window.innerHeight);
+
     this.ticker = Ticker.shared;
-
     this.ticker.add(this.update, this);
-
     this.stateManager.onStateChange(this.handleGameStateChange.bind(this));
   }
 
@@ -81,6 +83,8 @@ export class Game {
   }
 
   private update() {
+    this.asteroid.move();
+
     let dx = 0,
       dy = 0;
 
@@ -109,5 +113,9 @@ export class Game {
 
   public getPlayer() {
     return this.player;
+  }
+
+  public getAsteroid() {
+    return this.asteroid;
   }
 }

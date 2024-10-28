@@ -6,7 +6,7 @@ export class Bullet extends Container {
   constructor(startX: number, startY: number) {
     super();
 
-    const graphics = new Graphics().circle(0, 0, 5).fill(0xff0000);
+    const graphics = new Graphics().circle(0, 0, 6).fill('white');
 
     this.addChild(graphics);
 
