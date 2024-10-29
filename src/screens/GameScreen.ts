@@ -17,8 +17,6 @@ export class GameScreen extends Container {
   constructor(onBack: () => void, gameStateManager: GameStateManager) {
     super();
 
-    console.log(this.addChild)
-
     this.stateManager = gameStateManager;
     this.onBack = onBack;
     this.setupUI();
@@ -47,12 +45,13 @@ export class GameScreen extends Container {
     this.addChild(this.game.getAsteroid());
     this.menuPopup = new Popup(
       () => this.resumeGame(),
+      () => this.resetGame(),
       () => this.leaveGame()
     );
 
     this.addChild(this.menuPopup);
 
-    this.gameOverPopup = new GameOverPopup(() => this.leaveGame());
+    this.gameOverPopup = new GameOverPopup(() => this.leaveGame(), () => this.resetGame());
 
     this.addChild(this.gameOverPopup);
 
@@ -83,7 +82,13 @@ export class GameScreen extends Container {
     this.stateManager.setState(GameState.PLAYING);
   }
 
+  private resetGame() {
+    this.game.reset();
+    this.stateManager.setState(GameState.PLAYING);
+  }
+
   private leaveGame() {
+    this.game.reset();
     this.stateManager.setState(GameState.START);
     this.onBack();
   }

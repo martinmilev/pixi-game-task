@@ -14,14 +14,21 @@ export class Game {
   constructor(gameStateManager: GameStateManager) {
     this.stateManager = gameStateManager;
     this.player = new Player();
+    this.asteroid = new Enemy();
+    this.ticker = Ticker.shared;
+    this.stateManager.onStateChange(this.handleGameStateChange.bind(this));
+    this.init();
+  }
+
+  private init() {
     this.player.setPosition(window.innerWidth / 2, window.innerHeight - 100);
 
-    this.asteroid = new Enemy();
-    this.asteroid.setPosition(window.innerWidth - 500, 500 - window.innerHeight);
+    this.asteroid.setPosition(
+      window.innerWidth - 500,
+      500 - window.innerHeight
+    );
 
-    this.ticker = Ticker.shared;
     this.ticker.add(this.update, this);
-    this.stateManager.onStateChange(this.handleGameStateChange.bind(this));
   }
 
   private handleGameStateChange() {
@@ -97,10 +104,18 @@ export class Game {
       this.player.move(dx, dy);
     }
 
-    // Handle bullets
     for (const bullet of this.player.getBullets()) {
       bullet.move();
     }
+  }
+
+  public reset() {
+    this.stopGameLoop();
+    this.keys = {};
+    this.player.reset();
+    this.asteroid.reset();
+    this.init();
+    this.stateManager.setState(GameState.START);
   }
 
   public isGamePaused(): boolean {

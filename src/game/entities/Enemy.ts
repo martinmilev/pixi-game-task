@@ -26,4 +26,10 @@ export class Enemy extends Container implements Entity {
     this.x = x;
     this.y = y;
   }
+
+  public reset() {
+    this.setPosition(window.innerWidth / 2, window.innerHeight / 2); // example initial position
+
+    this.speed = 2;
+  }
 }

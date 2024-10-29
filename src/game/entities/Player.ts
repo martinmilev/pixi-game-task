@@ -1,8 +1,8 @@
-import { Graphics, Container, Sprite, Assets } from "pixi.js";
+import { Container, Sprite, Assets } from "pixi.js";
 import { Entity } from "../../ts/Entity";
 import { Bullet } from "./Bullet";
 
-const ship = await Assets.load('../../public/ship.png');
+const ship = await Assets.load("../../public/ship.png");
 
 export class Player extends Container implements Entity {
   public speed: number = 5;
@@ -10,19 +10,11 @@ export class Player extends Container implements Entity {
 
   constructor() {
     super();
-
-    const player = new Sprite(ship)
-
-    // const graphics = new Graphics()
-    //   .moveTo(-25, 25)
-    //   .lineTo(25, 25)
-    //   .lineTo(0, -25)
-    //   .closePath()
-    //   .fill(0x00ff00);
+    const player = new Sprite(ship);
 
     player.width = 100;
     player.height = 100;
-    player.x = -50
+    player.x = -50;
 
     this.addChild(player);
   }
@@ -56,5 +48,14 @@ export class Player extends Container implements Entity {
 
   public getBullets() {
     return this.bullets;
+  }
+
+  public reset() {
+    for (const bullet of this.bullets) {
+      bullet.destroy();
+    }
+    this.bullets = [];
+
+    this.setPosition(window.innerWidth / 2, window.innerHeight - 100);
   }
 }

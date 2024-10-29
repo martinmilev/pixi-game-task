@@ -2,9 +2,10 @@ import { Container, Text, Graphics } from "pixi.js";
 
 export class GameOverPopup extends Container {
   private leaveButton: Text;
+  private resetButton: Text;
   private message: Text;
 
-  constructor(onLeave: () => void) {
+  constructor(onReset: () => void, onLeave: () => void) {
     super();
 
     const size = 500;
@@ -34,6 +35,35 @@ export class GameOverPopup extends Container {
     this.message.interactive = true;
 
     this.addChild(this.message);
+
+    this.resetButton = new Text({
+      text: "Reset",
+      style: {
+        fontSize: 32,
+        fill: "black",
+        fontWeight: "bold",
+      },
+    });
+    this.resetButton.anchor.set(0.5);
+    this.resetButton.position.set(
+      window.innerWidth / 2,
+      window.innerHeight / 2 + 75
+    );
+    this.resetButton.interactive = true;
+    this.resetButton.cursor = "pointer";
+    this.resetButton.on("pointerdown", () => {
+      this.resetButton.style.fill = "black";
+      onReset();
+    });
+
+    this.resetButton.on("pointerover", () => {
+      this.resetButton.style.fill = "green";
+    });
+    this.resetButton.on("pointerout", () => {
+      this.resetButton.style.fill = "black";
+    });
+
+    this.addChild(this.resetButton);
 
     this.leaveButton = new Text({
       text: "Leave",

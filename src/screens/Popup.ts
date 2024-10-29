@@ -3,9 +3,10 @@ import { Container, Text, Graphics } from "pixi.js";
 export class Popup extends Container {
   private resumeButton: Text;
   private leaveButton: Text;
+  private resetButton: Text;
   private message: Text;
 
-  constructor(onResume: () => void, onLeave: () => void,) {
+  constructor(onResume: () => void, onReset: () => void, onLeave: () => void) {
     super();
 
     const size = 500;
@@ -47,7 +48,7 @@ export class Popup extends Container {
     this.resumeButton.anchor.set(0.5);
     this.resumeButton.position.set(
       window.innerWidth / 2,
-      window.innerHeight / 2 + 50
+      window.innerHeight / 2
     );
     this.resumeButton.interactive = true;
     this.resumeButton.cursor = "pointer";
@@ -63,6 +64,35 @@ export class Popup extends Container {
     this.resumeButton.on("pointerout", () => {
       this.resumeButton.style.fill = "black";
     });
+
+    this.resetButton = new Text({
+      text: "Reset",
+      style: {
+        fontSize: 32,
+        fill: "black",
+        fontWeight: "bold",
+      },
+    });
+    this.resetButton.anchor.set(0.5);
+    this.resetButton.position.set(
+      window.innerWidth / 2,
+      window.innerHeight / 2 + 75
+    );
+    this.resetButton.interactive = true;
+    this.resetButton.cursor = "pointer";
+    this.resetButton.on("pointerdown", () => {
+      this.resetButton.style.fill = "black";
+      onReset();
+    });
+
+    this.resetButton.on("pointerover", () => {
+      this.resetButton.style.fill = "green";
+    });
+    this.resetButton.on("pointerout", () => {
+      this.resetButton.style.fill = "black";
+    });
+
+    this.addChild(this.resetButton);
 
     this.leaveButton = new Text({
       text: "Leave",
