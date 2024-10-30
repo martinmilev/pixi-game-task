@@ -1,22 +1,23 @@
 import { Container, Sprite, Assets } from "pixi.js";
 import { Entity } from "../../ts/Entity";
 import { Bullet } from "./Bullet";
+import { Enemy } from "./Enemy"; 
 
 const ship = await Assets.load("../../public/ship.png");
 
 export class Player extends Container implements Entity {
-  public speed: number = 5;
+  public speed: number = 4;
   private bullets: Bullet[] = [];
+  private playerSprite: Sprite;
 
   constructor() {
     super();
-    const player = new Sprite(ship);
+    this.playerSprite = new Sprite(ship);
+    
+    this.playerSprite.width = 100;
+    this.playerSprite.height = 100;
 
-    player.width = 100;
-    player.height = 100;
-    player.x = -50;
-
-    this.addChild(player);
+    this.addChild(this.playerSprite);
   }
 
   move(dx: number, dy: number) {
@@ -30,7 +31,7 @@ export class Player extends Container implements Entity {
   }
 
   public shoot() {
-    const bullet = new Bullet(this.x, this.y - 20);
+    const bullet = new Bullet(this.x + this.playerSprite.width / 2, this.y - 20);
     this.bullets.push(bullet);
     this.parent.addChild(bullet);
   }
@@ -57,5 +58,13 @@ export class Player extends Container implements Entity {
     this.bullets = [];
 
     this.setPosition(window.innerWidth / 2, window.innerHeight - 100);
+  }
+
+  public checkCollisionWithAsteroid(asteroid: Enemy): boolean {
+    const dx = this.x - asteroid.x;
+    const dy = this.y - asteroid.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    
+    return distance < (this.playerSprite.width / 2 + asteroid.width / 2);
   }
 }

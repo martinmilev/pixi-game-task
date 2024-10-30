@@ -5,7 +5,7 @@ export class GameOverPopup extends Container {
   private resetButton: Text;
   private message: Text;
 
-  constructor(onReset: () => void, onLeave: () => void) {
+  constructor(onLeave: () => void, onReset: () => void) {
     super();
 
     const size = 500;

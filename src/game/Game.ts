@@ -102,6 +102,17 @@ export class Game {
     for (const bullet of this.player.getBullets()) {
       bullet.move();
     }
+
+    for (const asteroid of this.asteroids.getAsteroids()) {
+      if (this.player.checkCollisionWithAsteroid(asteroid)) {
+        this.handlePlayerDeath();
+        break;
+      }
+    }
+  }
+
+  private handlePlayerDeath() {
+    this.stateManager.setState(GameState.GAME_OVER);
   }
 
   public reset() {
