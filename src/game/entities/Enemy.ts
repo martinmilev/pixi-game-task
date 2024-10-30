@@ -1,16 +1,14 @@
-import { Container, Assets, Sprite } from "pixi.js";
+import { Container, Sprite, Texture } from "pixi.js";
 import { Entity } from "../../ts/Entity";
-
-const asteroid = await Assets.load('../../public/asteroid.png');
 
 export class Enemy extends Container implements Entity {
   public speed: number = 2;
 
-  constructor() {
+  constructor(texture: Texture) {
     super();
 
-    const enemy = new Sprite(asteroid)
-    
+    const enemy = new Sprite(texture);
+
     enemy.width = 300;
     enemy.height = 300;
 
@@ -28,8 +26,7 @@ export class Enemy extends Container implements Entity {
   }
 
   public reset() {
-    this.setPosition(window.innerWidth / 2, window.innerHeight / 2); // example initial position
-
+    this.setPosition(window.innerWidth / 2, window.innerHeight / 2);
     this.speed = 2;
   }
 }

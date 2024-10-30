@@ -21,7 +21,6 @@ export class GameScreen extends Container {
     this.onBack = onBack;
     this.setupUI();
 
-
     const tilingSprite = new TilingSprite({
       texture,
       width: window.innerWidth,
@@ -30,29 +29,30 @@ export class GameScreen extends Container {
     this.addChild(tilingSprite);
 
     const ticker = Ticker.shared;
-
     let count = 0;
 
-    ticker.add(() =>
-      {
-          count += 0.005;
-          tilingSprite.tilePosition.y += 2;
-      });
+    ticker.add(() => {
+      count += 0.005;
+      tilingSprite.tilePosition.y += 2;
+    });
 
     this.game = new Game(this.stateManager);
     this.game.addKeyListener();
+
     this.addChild(this.game.getPlayer());
-    this.addChild(this.game.getAsteroid());
+    this.addChild(this.game.getAsteroids());
+    
     this.menuPopup = new Popup(
       () => this.resumeGame(),
       () => this.resetGame(),
       () => this.leaveGame()
     );
-
     this.addChild(this.menuPopup);
 
-    this.gameOverPopup = new GameOverPopup(() => this.leaveGame(), () => this.resetGame());
-
+    this.gameOverPopup = new GameOverPopup(
+      () => this.leaveGame(),
+      () => this.resetGame()
+    );
     this.addChild(this.gameOverPopup);
 
     this.stateManager.onStateChange(this.handleGameStateChange.bind(this));
@@ -60,7 +60,6 @@ export class GameScreen extends Container {
 
   private handleGameStateChange() {
     const currentState = this.stateManager.getState();
-
     this.menuPopup.visible = currentState === GameState.PAUSED;
     this.gameOverPopup.visible = currentState === GameState.GAME_OVER;
   }

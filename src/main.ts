@@ -18,9 +18,6 @@ const gameStateManager = new GameStateManager();
   initDevtools({ app });
   document.body.appendChild(app.canvas);
 
-  // Instantiate GameStateManager
-
-  // Create screens
   const homeScreen = new HomeScreen(
     () => switchScreen(app, gameScreen),
     () => switchScreen(app, highScoresScreen),
@@ -38,6 +35,6 @@ const gameStateManager = new GameStateManager();
     switchScreen(app, homeScreen)
   );
 
-  // Start with the HomeScreen
+  // HomeScreen is first
   switchScreen(app, homeScreen);
 })();
