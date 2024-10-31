@@ -1,17 +1,16 @@
 import { Assets, Container, Text, Ticker, TilingSprite } from "pixi.js";
 import { Game } from "../game/Game";
-import { Popup } from "./Popup";
+import { Popup } from "../components/Popup";
 import { GameStateManager } from "../game/GameStateManager";
-import { GameOverPopup } from "./GameOverPopup";
-import { GameState } from "../ts";
+import { GameState, PopupType } from "../ts";
 
 const texture = await Assets.load("../../public/bg.png");
 
 export class GameScreen extends Container {
   private game: Game;
   private stateManager: GameStateManager;
+  private gameOverPopup: Popup;
   private menuPopup: Popup;
-  private gameOverPopup: GameOverPopup;
   private onBack: () => void;
 
   constructor(onBack: () => void, gameStateManager: GameStateManager) {
@@ -41,18 +40,13 @@ export class GameScreen extends Container {
 
     this.addChild(this.game.getPlayer());
     this.addChild(this.game.getAsteroids());
-    
-    this.menuPopup = new Popup(
-      () => this.resumeGame(),
-      () => this.resetGame(),
-      () => this.leaveGame()
-    );
+
+    this.menuPopup = new Popup();
+    this.menuPopup.setContent(this.createMenuContent());
     this.addChild(this.menuPopup);
 
-    this.gameOverPopup = new GameOverPopup(
-      () => this.leaveGame(),
-      () => this.resetGame()
-    );
+    this.gameOverPopup = new Popup();
+    this.gameOverPopup.setContent(this.createGameOverContent());
     this.addChild(this.gameOverPopup);
 
     this.stateManager.onStateChange(this.handleGameStateChange.bind(this));
@@ -75,6 +69,112 @@ export class GameScreen extends Container {
     gameText.anchor.set(0.5);
     gameText.position.set(200, 50);
     this.addChild(gameText);
+  }
+
+  private createMenuContent(): Container {
+    const content = new Container();
+
+    const message = new Text({
+      text: "Pause!",
+      style: {
+        fontSize: 52,
+        fill: "red",
+        fontWeight: "bold",
+      },
+    });
+    message.anchor.set(0.5);
+    message.position.set(0, -120);
+
+    const resumeButton = new Text({
+      text: "Resume",
+      style: {
+        fontSize: 32,
+        fill: "black",
+        fontWeight: "bold",
+      },
+    });
+    resumeButton.anchor.set(0.5);
+    resumeButton.position.set(0, -30);
+    resumeButton.interactive = true;
+    resumeButton.cursor = "pointer";
+    resumeButton.on("pointerdown", this.resumeGame.bind(this));
+
+    const resetButton = new Text({
+      text: "Reset",
+      style: {
+        fontSize: 32,
+        fill: "black",
+        fontWeight: "bold",
+      },
+    });
+    resetButton.anchor.set(0.5);
+    resetButton.position.set(0, 50);
+    resetButton.interactive = true;
+    resetButton.cursor = "pointer";
+    resetButton.on("pointerdown", this.resetGame.bind(this));
+
+    const leaveButton = new Text({
+      text: "Leave",
+      style: {
+        fontSize: 32,
+        fill: "black",
+        fontWeight: "bold",
+      },
+    });
+    leaveButton.anchor.set(0.5);
+    leaveButton.position.set(0, 130);
+    leaveButton.interactive = true;
+    leaveButton.cursor = "pointer";
+    leaveButton.on("pointerdown", this.leaveGame.bind(this));
+
+    content.addChild(message, resumeButton, resetButton, leaveButton);
+    return content;
+  }
+
+  private createGameOverContent(): Container {
+    const content = new Container();
+
+    const message = new Text({
+      text: "Game Over!",
+      style: {
+        fontSize: 52,
+        fill: "red",
+        fontWeight: "bold",
+      },
+    });
+    message.anchor.set(0.5);
+    message.position.set(0, -100);
+
+    const resetButton = new Text({
+      text: "Reset",
+      style: {
+        fontSize: 32,
+        fill: "black",
+        fontWeight: "bold",
+      },
+    });
+    resetButton.anchor.set(0.5);
+    resetButton.position.set(0, 0);
+    resetButton.interactive = true;
+    resetButton.cursor = "pointer";
+    resetButton.on("pointerdown", this.resetGame.bind(this));
+
+    const leaveButton = new Text({
+      text: "Leave",
+      style: {
+        fontSize: 32,
+        fill: "black",
+        fontWeight: "bold",
+      },
+    });
+    leaveButton.anchor.set(0.5);
+    leaveButton.position.set(0, 50);
+    leaveButton.interactive = true;
+    leaveButton.cursor = "pointer";
+    leaveButton.on("pointerdown", this.leaveGame.bind(this));
+
+    content.addChild(message, resetButton, leaveButton);
+    return content;
   }
 
   private resumeGame() {

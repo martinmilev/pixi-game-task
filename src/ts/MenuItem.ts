@@ -1,4 +1,4 @@
 export interface MenuItem {
-    textObject: Text;
+    text: Text;
     onClick: () => void;
   }
