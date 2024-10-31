@@ -1,5 +1,5 @@
 import { Container, Sprite, Texture } from "pixi.js";
-import { Entity } from "../../ts/Entity";
+import { Entity } from "../../ts";
 
 export class Enemy extends Container implements Entity {
   public speed: number = 2;

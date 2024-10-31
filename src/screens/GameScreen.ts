@@ -2,8 +2,8 @@ import { Assets, Container, Text, Ticker, TilingSprite } from "pixi.js";
 import { Game } from "../game/Game";
 import { Popup } from "./Popup";
 import { GameStateManager } from "../game/GameStateManager";
-import { GameState } from "../ts/GameState";
 import { GameOverPopup } from "./GameOverPopup";
+import { GameState } from "../ts";
 
 const texture = await Assets.load("../../public/bg.png");
 

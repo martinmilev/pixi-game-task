@@ -1,8 +1,8 @@
 import { Ticker } from "pixi.js";
 import { GameStateManager } from "./GameStateManager";
-import { GameState } from "../ts/GameState";
 import { Player } from "./entities";
 import { Asteroids } from "./entities";
+import { GameState } from "../ts";
 
 export class Game {
   private stateManager: GameStateManager;

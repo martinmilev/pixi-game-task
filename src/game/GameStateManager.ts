@@ -1,4 +1,4 @@
-import { GameState } from "../ts/GameState";
+import { GameState } from "../ts";
 
 export class GameStateManager {
   private state: GameState = GameState.START;

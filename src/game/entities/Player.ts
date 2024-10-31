@@ -1,5 +1,5 @@
 import { Container, Sprite, Assets } from "pixi.js";
-import { Entity } from "../../ts/Entity";
+import { Entity } from "../../ts";
 import { Bullet } from "./Bullet";
 import { Enemy } from "./Enemy"; 
 
