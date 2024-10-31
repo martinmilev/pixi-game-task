@@ -4,6 +4,7 @@ import { Popup } from "../components/Popup";
 import { GameStateManager } from "../game/GameStateManager";
 import { GameState } from "../ts";
 import { MenuItem } from "../components/MenuItem";
+import { Score } from "../game/Score";
 
 const texture = await Assets.load("../../public/bg.png");
 
@@ -13,6 +14,8 @@ export class GameScreen extends Container {
   private gameOverPopup: Popup;
   private menuPopup: Popup;
   private onBack: () => void;
+  private score: Score;
+  private scoreText: Text;
 
   constructor(onBack: () => void, gameStateManager: GameStateManager) {
     super();
@@ -34,12 +37,24 @@ export class GameScreen extends Container {
       count += 0.005;
       tilingSprite.tilePosition.y += 2;
     });
+    this.score = new Score();
 
-    this.game = new Game(this.stateManager);
+    this.game = new Game(this.stateManager, this.score);
     this.game.addKeyListener();
 
     this.addChild(this.game.getPlayer());
     this.addChild(this.game.getAsteroids());
+
+    this.scoreText = new Text({
+      text: `Score: ${this.score.get()}`,
+      style: {
+        fontSize: 48,
+        fill: "white",
+        fontWeight: "bold",
+      },
+    });
+    this.scoreText.position.set(10, 10);
+    this.addChild(this.scoreText);
 
     this.menuPopup = new Popup();
     this.menuPopup.setContent(this.createMenuContent());
@@ -50,6 +65,8 @@ export class GameScreen extends Container {
     this.addChild(this.gameOverPopup);
 
     this.stateManager.onStateChange(this.handleGameStateChange.bind(this));
+
+    this.score.onChange(this.updateScoreDisplay.bind(this));
   }
 
   private handleGameStateChange() {
@@ -151,5 +168,9 @@ export class GameScreen extends Container {
     super.destroy();
     this.game.removeKeyListener();
     this.game.destroy();
+  }
+
+  private updateScoreDisplay(newScore: number) {
+    this.scoreText.text = `Score: ${newScore}`;
   }
 }

@@ -7,14 +7,17 @@ const explosionTexture = await Assets.load("../../public/explosion.png");
 
 export class Asteroids extends Container {
   private asteroids: Enemy[] = [];
+  private onAsteroidDestroyed: () => void;
+
   private readonly screenBounds = {
     width: window.innerWidth,
     height: window.innerHeight,
   };
   private spawnInterval: number = 3000;
 
-  constructor() {
+  constructor(onAsteroidDestroyed: () => void) {
     super();
+    this.onAsteroidDestroyed = onAsteroidDestroyed;
     this.startSpawning();
   }
 
@@ -81,6 +84,7 @@ export class Asteroids extends Container {
           this.asteroids.splice(i, 1);
           bullets.splice(j, 1);
           bullet.parent.removeChild(bullet);
+          this.onAsteroidDestroyed();
           break;
         }
       }

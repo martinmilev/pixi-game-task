@@ -3,19 +3,22 @@ import { GameStateManager } from "./GameStateManager";
 import { Player } from "./entities";
 import { Asteroids } from "./entities";
 import { GameState } from "../ts";
+import { Score } from "./Score";
+
 
 export class Game {
   private stateManager: GameStateManager;
   private player: Player;
   private asteroids: Asteroids;
-  private keys: { [key: string]: boolean } = {};
   private ticker: Ticker;
+  private keys: { [key: string]: boolean } = {};
   private isPaused: boolean = false;
 
-  constructor(gameStateManager: GameStateManager) {
+  constructor(gameStateManager: GameStateManager, score: Score) {
     this.stateManager = gameStateManager;
     this.player = new Player();
-    this.asteroids = new Asteroids();
+    console.log('2score', score)
+    this.asteroids = new Asteroids(() => score.add(1));
     this.ticker = Ticker.shared;
     this.stateManager.onStateChange(this.handleGameStateChange.bind(this));
     this.init();
