@@ -4,14 +4,14 @@ export class MenuItem {
   public textObject: Text;
   public onClick: () => void;
 
-  constructor(text: string, onClick: () => void) {
+  constructor(text: string, onClick: () => void, color: string = "white") {
     this.onClick = onClick;
 
     this.textObject = new Text({
       text,
       style: {
         fontSize: 32,
-        fill: "white",
+        fill: color,
         fontWeight: "bold",
       },
     });
@@ -25,7 +25,7 @@ export class MenuItem {
     });
 
     this.textObject.on("pointerout", () => {
-      this.textObject.style.fill = "white";
+      this.textObject.style.fill = color;
     });
 
     this.textObject.on("pointerdown", onClick);
