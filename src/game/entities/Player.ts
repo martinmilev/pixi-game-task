@@ -1,7 +1,7 @@
 import { Container, Sprite, Assets } from "pixi.js";
 import { Entity } from "../../ts";
 import { Bullet } from "./Bullet";
-import { Enemy } from "./Enemy"; 
+import { Enemy } from "./Enemy";
 
 const ship = await Assets.load("../../public/ship.png");
 
@@ -13,7 +13,7 @@ export class Player extends Container implements Entity {
   constructor() {
     super();
     this.playerSprite = new Sprite(ship);
-    
+
     this.playerSprite.width = 100;
     this.playerSprite.height = 100;
 
@@ -31,7 +31,10 @@ export class Player extends Container implements Entity {
   }
 
   public shoot() {
-    const bullet = new Bullet(this.x + this.playerSprite.width / 2, this.y - 20);
+    const bullet = new Bullet(
+      this.x + this.playerSprite.width / 2,
+      this.y - 20
+    );
     this.bullets.push(bullet);
     this.parent.addChild(bullet);
   }
@@ -64,7 +67,15 @@ export class Player extends Container implements Entity {
     const dx = this.x - asteroid.x;
     const dy = this.y - asteroid.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
-    
-    return distance < (this.playerSprite.width / 2 + asteroid.width / 2);
+
+    return distance < this.playerSprite.width / 2 + asteroid.width / 2;
+  }
+
+  public getX(): number {
+    return this.x;
+  }
+
+  public getY(): number {
+    return this.y;
   }
 }

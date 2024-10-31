@@ -15,7 +15,7 @@ export class Game {
   constructor(gameStateManager: GameStateManager) {
     this.stateManager = gameStateManager;
     this.player = new Player();
-    this.asteroids = new Asteroids(2);
+    this.asteroids = new Asteroids();
     this.ticker = Ticker.shared;
     this.stateManager.onStateChange(this.handleGameStateChange.bind(this));
     this.init();
@@ -95,8 +95,24 @@ export class Game {
     if (this.keys["ArrowLeft"]) dx -= 1;
     if (this.keys["ArrowRight"]) dx += 1;
 
-    if (dx !== 0 || dy !== 0) {
-      this.player.move(dx, dy);
+    const newX = this.player.getX() + dx * this.player.speed;
+    const newY = this.player.getY() + dy * this.player.speed;
+
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+
+    if (newX < 0) {
+      this.player.setPosition(0, newY);
+    } else if (newX > screenWidth - this.player.width) {
+      this.player.setPosition(screenWidth - this.player.width, newY);
+    } else {
+      this.player.setPosition(newX, newY);
+    }
+
+    if (newY < 0) {
+      this.player.setPosition(newX, 0);
+    } else if (newY > screenHeight - this.player.height) {
+      this.player.setPosition(newX, screenHeight - this.player.height);
     }
 
     for (const bullet of this.player.getBullets()) {
