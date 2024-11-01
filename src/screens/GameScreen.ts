@@ -5,13 +5,14 @@ import { GameStateManager } from "../game/GameStateManager";
 import { GameState } from "../ts";
 import { MenuItem } from "../components/MenuItem";
 import { Score } from "../game/Score";
+import { getItem, setItem } from "../utils/localStorage";
 
 const texture = await Assets.load("../../public/bg.png");
 
 export class GameScreen extends Container {
   private game: Game;
   private stateManager: GameStateManager;
-  private gameOverPopup: Popup;
+  private gameOverPopup: Popup | undefined;
   private menuPopup: Popup;
   private onBack: () => void;
   private score: Score;
@@ -60,10 +61,6 @@ export class GameScreen extends Container {
     this.menuPopup.setContent(this.createMenuContent());
     this.addChild(this.menuPopup);
 
-    this.gameOverPopup = new Popup();
-    this.gameOverPopup.setContent(this.createGameOverContent());
-    this.addChild(this.gameOverPopup);
-
     this.stateManager.onStateChange(this.handleGameStateChange.bind(this));
 
     this.score.onChange(this.updateScoreDisplay.bind(this));
@@ -71,8 +68,16 @@ export class GameScreen extends Container {
 
   private handleGameStateChange() {
     const currentState = this.stateManager.getState();
+
+    if (currentState === GameState.GAME_OVER) {
+      this.gameOverPopup = new Popup();
+      this.gameOverPopup.setContent(
+        this.createGameOverContent(this.score.get())
+      );
+      this.addChild(this.gameOverPopup);
+      this.gameOverPopup.visible = currentState === GameState.GAME_OVER;
+    }
     this.menuPopup.visible = currentState === GameState.PAUSED;
-    this.gameOverPopup.visible = currentState === GameState.GAME_OVER;
   }
 
   private createMenuContent(): Container {
@@ -86,7 +91,7 @@ export class GameScreen extends Container {
         fontWeight: "bold",
       },
     });
-    message.position.set(-60, -160);
+    message.position.set(-message.width / 2, -160);
     content.addChild(message);
 
     const resumeButton = new MenuItem(
@@ -116,7 +121,7 @@ export class GameScreen extends Container {
     return content;
   }
 
-  private createGameOverContent(): Container {
+  private createGameOverContent(score: number): Container {
     const content = new Container();
 
     const message = new Text({
@@ -127,15 +132,31 @@ export class GameScreen extends Container {
         fontWeight: "bold",
       },
     });
-    message.position.set(-60, -160);
+    message.position.set(-message.width / 2, -160);
     content.addChild(message);
+
+    console.log("score: ", score);
+    const scoreMessage = new Text({
+      text: `Score: ${score}`,
+      style: {
+        fontSize: 40,
+        fill: "black",
+        fontWeight: "bold",
+      },
+    });
+    scoreMessage.position.set(-scoreMessage.width / 2, -80);
+    content.addChild(scoreMessage);
+
+    const highScores = getItem("highScores") || [];
+    highScores.push(score);
+    setItem("highScores", highScores);
 
     const resetButton = new MenuItem(
       "Reset",
       this.resetGame.bind(this),
       "black"
     );
-    resetButton.setPosition(0, 0);
+    resetButton.setPosition(0, 40);
     content.addChild(resetButton.textObject);
 
     const leaveButton = new MenuItem(
@@ -143,7 +164,7 @@ export class GameScreen extends Container {
       this.leaveGame.bind(this),
       "black"
     );
-    leaveButton.setPosition(0, 50);
+    leaveButton.setPosition(0, 100);
     content.addChild(leaveButton.textObject);
 
     return content;
