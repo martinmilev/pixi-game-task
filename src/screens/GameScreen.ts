@@ -12,7 +12,7 @@ const texture = await Assets.load("../../public/bg.png");
 export class GameScreen extends Container {
   private game: Game;
   private stateManager: GameStateManager;
-  private gameOverPopup: Popup | undefined;
+  private gameOverPopup: Popup;
   private menuPopup: Popup;
   private onBack: () => void;
   private score: Score;
@@ -61,22 +61,25 @@ export class GameScreen extends Container {
     this.menuPopup.setContent(this.createMenuContent());
     this.addChild(this.menuPopup);
 
-    this.stateManager.onStateChange(this.handleGameStateChange.bind(this));
-
     this.score.onChange(this.updateScoreDisplay.bind(this));
+    this.stateManager.onStateChange(this.handleGameStateChange.bind(this));
   }
 
   private handleGameStateChange() {
     const currentState = this.stateManager.getState();
 
     if (currentState === GameState.GAME_OVER) {
+      const highScores = getItem("highScores") || [];
+      const score = this.score.get()
+      highScores.push(score);
+      setItem("highScores", highScores);
+
       this.gameOverPopup = new Popup();
-      this.gameOverPopup.setContent(
-        this.createGameOverContent(this.score.get())
-      );
+      this.gameOverPopup.setContent(this.createGameOverContent(score));
       this.addChild(this.gameOverPopup);
-      this.gameOverPopup.visible = currentState === GameState.GAME_OVER;
     }
+
+    this.gameOverPopup.visible = currentState === GameState.GAME_OVER;
     this.menuPopup.visible = currentState === GameState.PAUSED;
   }
 
@@ -135,7 +138,6 @@ export class GameScreen extends Container {
     message.position.set(-message.width / 2, -160);
     content.addChild(message);
 
-    console.log("score: ", score);
     const scoreMessage = new Text({
       text: `Score: ${score}`,
       style: {
@@ -146,10 +148,6 @@ export class GameScreen extends Container {
     });
     scoreMessage.position.set(-scoreMessage.width / 2, -80);
     content.addChild(scoreMessage);
-
-    const highScores = getItem("highScores") || [];
-    highScores.push(score);
-    setItem("highScores", highScores);
 
     const resetButton = new MenuItem(
       "Reset",

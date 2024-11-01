@@ -17,7 +17,6 @@ export class Game {
   constructor(gameStateManager: GameStateManager, score: Score) {
     this.stateManager = gameStateManager;
     this.player = new Player();
-    console.log('2score', score)
     this.asteroids = new Asteroids(() => score.add(1));
     this.ticker = Ticker.shared;
     this.stateManager.onStateChange(this.handleGameStateChange.bind(this));

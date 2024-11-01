@@ -26,6 +26,8 @@ export class HighScoresScreen extends Container {
     this.addChild(titleText);
 
     let yPosition = 150;
+
+    highScores.sort((a: number, b: number) => b - a);
     highScores.forEach((score: number, index: number) => {
       const scoreText = new Text({
         text: `#${index + 1}: ${score}`,
