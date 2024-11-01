@@ -4,6 +4,7 @@ import { MenuItem } from "../components/MenuItem";
 import { GameState } from "../ts";
 
 export class HomeScreen extends Container {
+  private stateManager: GameStateManager;
   private menuItems: MenuItem[];
   private selectedIndex: number;
 
@@ -15,10 +16,11 @@ export class HomeScreen extends Container {
   ) {
     super();
 
-    gameStateManager.setState(GameState.START);
+    this.stateManager = gameStateManager;
+    this.stateManager.setState(GameState.START);
 
     const newGameText = new MenuItem("New Game", () => {
-      gameStateManager.setState(GameState.PLAYING);
+      this.stateManager.setState(GameState.PLAYING);
       onNewGame();
     });
     const highScoresText = new MenuItem("High Scores", onHighScores);
@@ -41,6 +43,8 @@ export class HomeScreen extends Container {
   }
 
   private handleKeyDown(event: KeyboardEvent) {
+    if (this.stateManager.getState() !== GameState.START) return;
+
     if (event.key === "Enter") {
       this.menuItems[this.selectedIndex].onClick();
       return;
